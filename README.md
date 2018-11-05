@@ -11,6 +11,7 @@ At a high level, it provides the following APIs:
 `DateTime.Now.Ticks` may be used as timestamp for when events are at least 10ms apart. Although using real time clock maybe fine in the a single computer. The timestamp is used to prove the ordering to the event. Hence, the choice of timestamp is curial to correctness of the data structure.
 
 Below are all possible combinations of add and remove operations. A(elements,...) is the state of the add set. R(elements...) is the state of the remove set. An element is a tuple with (value, timestamp). add(element) and remove(element) are the operations.
+
 | Original state | Operation   | Resulting state |
 |----------------|-------------|-----------------|
 | A(a,1) R()     | add(a,0)    | A(a,1) R()      |
