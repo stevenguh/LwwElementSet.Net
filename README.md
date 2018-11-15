@@ -8,7 +8,26 @@ At a high level, it provides the following APIs:
 - `Merge(LwwElementSet<T> set)`
 - `ToList()`
 
-`DateTime.Now.Ticks` may be used as timestamp for when events are at least 10ms apart. Although using real time clock maybe fine in the a single computer. The timestamp is used to prove the ordering to the event. Hence, the choice of timestamp is curial to correctness of the data structure.
+The choice of timestamp is curial to the correctness of the data structure because it is used to provide the ordering of the events. Using real time clock maybe fine in a single computer. For example, vanilla `DateTime.Now.Ticks` may be used as timestamp for when events are at around 30ms apart. The exact timing varies on different computer.
+
+The following code is a simple example that counts the ticks up when the `DateTime.Now.Ticks` returns the same ticks since last accessed. It could be used when one wants to provide ordered timestamp when the events are microsecond apart. Noted that the `OrderedTime` has not yet been tested.
+
+    public static class OrderedTime
+    {
+        private static long _ticks = 0;
+        private static object _lock = new object();
+        public static long Ticks
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    long currentTicks = DateTime.Now.Ticks;
+                    return _ticks = (currentTicks > _ticks) ? currentTicks : _ticks + 1;
+                }
+            }
+        }
+    }
 
 Below are all possible combinations of add and remove operations. A(elements,...) is the state of the add set. R(elements...) is the state of the remove set. An element is a tuple with (value, timestamp). add(element) and remove(element) are the operations.
 
@@ -45,3 +64,4 @@ The table above is different than the one in [Roshi](https://github.com/soundclo
 - [Roshi](https://github.com/soundcloud/roshi) from SoundCloud
 - [go-lww-element-set](https://github.com/cedricblondeau/go-lww-element-set), a Last-Writer-Wins (LWW) CRDT implementation with Redis support in Go
 - [Clock Synchronization](http://www.krzyzanowski.org/rutgers/notes/pdf/06-clocks.pdf) by Paul Krzyzanowski
+- [Precision and accuracy of DateTime](https://blogs.msdn.microsoft.com/ericlippert/2010/04/08/precision-and-accuracy-of-datetime/)
